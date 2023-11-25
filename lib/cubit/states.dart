@@ -1,4 +1,3 @@
-import 'package:chatapp/cubit/cubit.dart';
 
 abstract class SocialStates {}
 class InitialState extends SocialStates{}
@@ -12,7 +11,18 @@ class SocialGetUserErrorState extends SocialStates{
 
   SocialGetUserErrorState(this.error);
 }
+/// for get Comments States
+class SocialGetCommentsLoadingState extends SocialStates{}
+class SocialGetCommentsSuccessState extends SocialStates{
+}
+class SocialGetCommentsFailureState extends SocialStates{}
 
+/// for send Comments states
+class SocialCreateCommentLoading extends SocialStates {}
+class SocialCreateCommentSuccess extends SocialStates {}
+class SocialCreateCommentFailure extends SocialStates {}
+class SocialGetCommentImageSuccess extends SocialStates{}
+class SocialGetCommentImageFailure extends SocialStates{}
 
 class SocialGetAllUserLoadingState extends SocialStates{}
 
@@ -50,7 +60,7 @@ class SocialLoadingUpdateDataState extends SocialStates {}
 
 class SocialUpdateSuccessData extends SocialStates {}
 
-
+class SocialGetLastMessage extends SocialStates {}
 //create post
 
 class SocialLoadingCreatePost extends SocialStates{}

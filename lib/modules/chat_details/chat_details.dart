@@ -1,180 +1,305 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
-import 'package:chatapp/cubit/cubit.dart';
-import 'package:chatapp/cubit/states.dart';
+import 'dart:async';
+import 'dart:io';
 import 'package:chatapp/models/message_model.dart';
 import 'package:chatapp/models/user_model.dart';
-import 'package:chatapp/styles/colors.dart';
+import 'package:chatapp/network/remote/apis.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'MessageCard.dart';
+import 'custom_appbar.dart';
 
-import '../../shared/component/component.dart';
+class ChatDetailsScreen extends StatefulWidget {
+  const ChatDetailsScreen({super.key, required this.userModel});
 
-class ChatDetailsScreen extends StatelessWidget {
   final SocialUserModel userModel;
-  final time = DateTime.now();
-  var messageController = TextEditingController();
 
-  ChatDetailsScreen({super.key, required this.userModel});
+  @override
+  State<ChatDetailsScreen> createState() => _ChatDetailsScreenState();
+}
+
+class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
+  ScrollController scrollController = ScrollController();
+  var messageController = TextEditingController();
+  bool showEmoji = false;
+  bool isUploading = false;
+  List<SocialMessageModel> _list = [];
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _messageSubscription;
+  List<QueryDocumentSnapshot<Map<String, dynamic>>>? data;
+
+  @override
+  void initState() {
+    _messageSubscription = Api.getAllMessages(userModel: widget.userModel)
+        .listen((QuerySnapshot<Map<String, dynamic>> snapshots) {
+          data = snapshots.docs;
+    },);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    messageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (BuildContext context) {
-        SocialCubit.get(context).getMessages(receiverId: userModel.uId);
-        return BlocConsumer<SocialCubit, SocialStates>(
-          listener: (context, state) {},
-          builder: (context, state) {
-            return Scaffold(
-              appBar: AppBar(
-                titleSpacing: 0.0,
-                title: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 20.0,
-                      backgroundImage: NetworkImage(
-                        '${userModel.image}',
-                      ),
-                    ),
-                    SizedBox(width: 15.0,),
-                    Text(
-                      '${userModel.name}',
-                    ),
-                  ],
-                ),
-              ),
-              body: ConditionalBuilder(
-                condition: true,
-                builder: (context) =>
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: ListView.separated(
-                              itemBuilder: (context, index) {
-                                var message = SocialCubit
-                                    .get(context)
-                                    .messages[index];
-                                if (SocialCubit
-                                    .get(context)
-                                    .model!
-                                    .uId == message.senderId) {
-                                  return buildMyMessage(message);
-                                }
-                                return buildMessage(message);
-                              },
-                              separatorBuilder: (context, index) =>
-                                  SizedBox(height: 15.0,),
-                              itemCount: SocialCubit
-                                  .get(context)
-                                  .messages
-                                  .length,
-                            ),
-                          ),
-                          SizedBox(height: 15.0,),
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 1.0,
-                                color: Colors.grey,
-                              ),
-                              borderRadius: BorderRadius.circular(15.0,),
-                            ),
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15.0),
-                                    child: TextFormField(
-                                      controller: messageController,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: '  type your message here ...',
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height: 50,
-                                  color: defaultColor,
-                                  child: MaterialButton(
-                                    onPressed: () {
-                                      SocialCubit.get(context).sendMessage(
-                                        receiverId: userModel.uId,
-                                        text: messageController.text,
-                                        dateTime: DateTime.now().toString(),
-                                      );
-                                      messageController.text = '';
-                                    },
-                                    minWidth: 1.0,
-                                    child: Icon(
-                                      Icons.send_rounded,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                fallback: (context) =>
-                    Center(child: CircularProgressIndicator()),
-              ),
-            );
-          },
-        );
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
       },
+      child: SafeArea(
+        child: WillPopScope(
+          onWillPop: () {
+            if (showEmoji) {
+              setState(() {
+                showEmoji = !showEmoji;
+              });
+              return Future.value(false);
+            } else {
+              return Future.value(true);
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: CustomAppBar(userModel:widget.userModel,),
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: StreamBuilder(
+                    stream: Api.getAllMessages(userModel: widget.userModel),
+                    builder: (context, snapshots) {
+                      switch (snapshots.connectionState) {
+                        case ConnectionState.waiting:
+                        case ConnectionState.none:
+                        case ConnectionState.active:
+                        case ConnectionState.done:
+                          // final data = snapshots.data?.docs;
+                          _list = data
+                                  ?.map((e) =>
+                                      SocialMessageModel.fromJson(e.data()))
+                                  .toList() ??
+                              [];
+                          if (_list.isNotEmpty) {
+                            return ListView.builder(
+                              reverse: true,
+                              itemCount: _list.length,
+                              physics: const BouncingScrollPhysics(),
+                              padding: EdgeInsets.only(
+                                  top:
+                                      MediaQuery.of(context).size.height * .01),
+                              itemBuilder: (context, index) {
+                                return MessageCard(
+                                  messageModel: _list[index],
+                                );
+                              },
+                            );
+                          } else {
+                            return const Center(
+                              child: Text(
+                                'Say Hii!...👋',
+                                style: TextStyle(fontSize: 22),
+                              ),
+                            );
+                          }
+                      }
+                    },
+                  ),
+                ),
+                if (isUploading)
+                  const Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
+                chatInput(messageController: messageController),
+                if (showEmoji)
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .35,
+                    child: EmojiPicker(
+                      onBackspacePressed: () {
+                        // Do something when the user taps the backspace button (optional)
+                        // Set it to null to hide the Backspace-Button
+                      },
+                      textEditingController: messageController,
+                      config: Config(
+                        columns: 7,
+                        emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                        verticalSpacing: 0,
+                        horizontalSpacing: 0,
+                        gridPadding: EdgeInsets.zero,
+                        initCategory: Category.RECENT,
+                        bgColor: const Color(0xFFF2F2F2),
+                        indicatorColor: Colors.blue,
+                        iconColor: Colors.grey,
+                        iconColorSelected: Colors.blue,
+                        backspaceColor: Colors.blue,
+                        skinToneDialogBgColor: Colors.white,
+                        skinToneIndicatorColor: Colors.grey,
+                        enableSkinTones: true,
+                        recentTabBehavior: RecentTabBehavior.RECENT,
+                        recentsLimit: 28,
+                        noRecents: const Text(
+                          'No Recents',
+                          style: TextStyle(fontSize: 20, color: Colors.black26),
+                          textAlign: TextAlign.center,
+                        ),
+                        // Needs to be const Widget
+                        loadingIndicator: const SizedBox.shrink(),
+                        // Needs to be const Widget
+                        tabIndicatorAnimDuration: kTabScrollDuration,
+                        categoryIcons: const CategoryIcons(),
+                        buttonMode: ButtonMode.MATERIAL,
+                      ),
+                    ),
+                  )
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget buildMessage(SocialMessageModel messageModel) =>
-      Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 10,
+  Widget chatInput({required TextEditingController messageController}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          vertical: MediaQuery.of(context).size.height * .01,
+          horizontal: MediaQuery.of(context).size.width * .02),
+      child: Row(
+        children: [
+          Expanded(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  side: BorderSide(
+                      color: Colors.black54.withOpacity(0.3), width: 1)),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      setState(() {
+                        showEmoji = !showEmoji;
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.emoji_emotions_outlined,
+                      color: Colors.blueAccent,
+                      size: 26,
+                    ),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: messageController,
+                      maxLines: 7,
+                      scrollPhysics:const BouncingScrollPhysics(),
+                      minLines: 1,
+                      keyboardType: TextInputType.multiline,
+                      onTap: () {
+                        if (showEmoji) {
+                          setState(() {
+                            showEmoji = !showEmoji;
+                          });
+                        }
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'Type Something...',
+                        hintStyle: TextStyle(
+                          color: Colors.blueAccent,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  // SizedBox(
+                  //   width: MediaQuery.of(context).size.width * .02,
+                  // ),
+                ],
+              ),
+            ),
           ),
-          decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadiusDirectional.only(
-                bottomEnd: Radius.circular(10),
-                topEnd: Radius.circular(10),
-                topStart: Radius.circular(10),
-              )
+          IconButton(
+            padding: EdgeInsets.zero,
+            onPressed: () async {
+              final ImagePicker picker = ImagePicker();
+              final List<XFile> images =
+              await picker.pickMultiImage(imageQuality: 80);
+              for (var image in images) {
+                setState(() {
+                  isUploading = true;
+                });
+                await Api.sendChatImage(
+                    socialUserModel: widget.userModel,
+                    file: File(image.path));
+                setState(() {
+                  isUploading = false;
+                });
+              }
+            },
+            icon: const Icon(
+              Icons.image,
+              color: Colors.blueAccent,
+              size: 25,
+            ),
           ),
-          child: Text(
-            '${messageModel.text}',
+          IconButton(
+            padding: EdgeInsets.zero,
+            onPressed: () async {
+              final ImagePicker picker = ImagePicker();
+              final XFile? image = await picker.pickImage(
+                  source: ImageSource.camera, imageQuality: 80);
+              if (image != null) {
+                setState(() {
+                  isUploading = true;
+                });
+                await Api.sendChatImage(
+                    socialUserModel: widget.userModel,
+                    file: File(image.path));
+                setState(() {
+                  isUploading = false;
+                });
+              }
+            },
+            icon: const Icon(Icons.camera_alt_outlined,
+                color: Colors.blueAccent, size: 25),
           ),
-        ),
-      );
-
-  Widget buildMyMessage(SocialMessageModel messageModel) =>
-      Align(
-        alignment: AlignmentDirectional.centerEnd,
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 10,
+          MaterialButton(
+            shape: const CircleBorder(),
+            minWidth: 0,
+            padding:
+                const EdgeInsets.only(top: 10, right: 5, left: 10, bottom: 10),
+            color: Colors.green,
+            onPressed: () {
+              if (messageController.text.isNotEmpty) {
+                Api.sendMessage(
+                    userModel: widget.userModel,
+                    msg: messageController.text,
+                    type: Type.text);
+                messageController.clear();
+              } else {
+                return;
+              }
+            },
+            child: const Icon(
+              Icons.send,
+              color: Colors.white,
+              size: 28,
+            ),
           ),
-          decoration: BoxDecoration(
-              color: defaultColor.withOpacity(0.2),
-              borderRadius: BorderRadiusDirectional.only(
-                bottomStart: Radius.circular(10),
-                topEnd: Radius.circular(10),
-                topStart: Radius.circular(10),
-              )
-          ),
-          child: Text(
-            '${messageModel.text}',
-          ),
-        ),
-      );
+        ],
+      ),
+    );
+  }
 }
+
+

@@ -39,16 +39,30 @@ dependencies:
   webview_flutter: ^3.0.4
   firebase_core: ^2.4.0
   firebase_auth: ^4.2.1
-  cloud_firestore: ^4.2.0
+  cloud_firestore: ^4.12.1
   fluttertoast: ^8.1.1
   conditional_builder_null_safety: ^0.0.6
   image_picker: ^0.8.6
   smooth_page_indicator: ^1.0.0+2
-  firebase_messaging: ^14.2.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   firebase_storage: ^11.0.9
+  cached_network_image: ^3.3.0
+  emoji_picker_flutter: ^1.6.3
+  firebase_messaging: ^14.7.3
+  http: ^1.1.0
+  flutter_local_notifications: ^16.1.0
+  image_gallery_saver: ^2.0.3
+  device_info_plus: ^9.1.0
+  permission_handler: ^11.0.1
+  flutter_file_dialog: ^3.0.2
+  path_provider: ^2.1.1
+  uuid: ^4.2.1
+  intl: ^0.18.1
+  shimmer: ^3.0.0
+  video_player: ^2.8.1
+  chewie: ^1.7.1
 
 
 dev_dependencies:

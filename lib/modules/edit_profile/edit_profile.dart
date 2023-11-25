@@ -17,12 +17,12 @@ class EditProfileScreen extends StatelessWidget {
       listener: (context,state){},
       builder: (context,state)
       {
-        var cubit = SocialCubit.get(context).model;
+        var cubit = SocialCubit.model;
         var profileImage = SocialCubit.get(context).profileImage;
         var coverImage = SocialCubit.get(context).coverImage;
-        bioController.text = cubit!.bio!;
-        nameController.text = cubit.name!;
-        phoneController.text = cubit.phone!;
+        bioController.text = cubit!.bio;
+        nameController.text = cubit.name;
+        phoneController.text = cubit.phone;
         return  Scaffold(
           appBar: defaultAppbar(
             context: context,
@@ -67,7 +67,7 @@ class EditProfileScreen extends StatelessWidget {
                                     topRight: Radius.circular(4.0),
                                   ),
                                   image: DecorationImage(
-                                    image: coverImage ==null ? NetworkImage('${cubit.cover}'):FileImage(coverImage) as ImageProvider,
+                                    image: coverImage ==null ? NetworkImage(cubit.cover):FileImage(coverImage) as ImageProvider,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -94,7 +94,7 @@ class EditProfileScreen extends StatelessWidget {
                               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                               child: CircleAvatar(
                                 radius: 50.0,
-                                backgroundImage: SocialCubit.get(context).profileImage == null ? NetworkImage('${cubit.image}'):FileImage(profileImage!)as ImageProvider,
+                                backgroundImage: SocialCubit.get(context).profileImage == null ? NetworkImage(cubit.image):FileImage(profileImage!)as ImageProvider,
                               ),
                             ),
                             IconButton(

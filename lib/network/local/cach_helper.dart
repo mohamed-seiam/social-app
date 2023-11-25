@@ -25,8 +25,11 @@ class CachHelper
       })
   {
     return  sharedPreferences?.getBool(key!);
-  }
 
+  }
+ static Future<void> deleteData ({required String key})async {
+    await sharedPreferences?.remove(key);
+ }
   static dynamic getData({required String key}) {
     return sharedPreferences?.get(key);
   }

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 
 import 'package:chatapp/layout/social_home.dart';
 import 'package:chatapp/modules/login/social_login_cubit/cubit.dart';
@@ -11,36 +9,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 
-class SocialLoginScreen extends StatelessWidget {
-   SocialLoginScreen({Key? key}) : super(key: key);
+class SocialLoginScreen extends StatefulWidget {
+  const SocialLoginScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SocialLoginScreen> createState() => _SocialLoginScreenState();
+}
+
+class _SocialLoginScreenState extends State<SocialLoginScreen> {
   var formKey = GlobalKey<FormState>();
-  var EmailController = TextEditingController();
-  var PasswordController = TextEditingController();
+  late TextEditingController emailController;
+
+  late TextEditingController passwordController;
+
+  @override
+  void initState() {
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  BlocProvider(
+    return BlocProvider(
       create: (BuildContext context) => SocialLoginCubit(),
-      child: BlocConsumer<SocialLoginCubit,SocialloginState>(
-        listener: (context,state)
-        {
-          if(state is SocialloginErrorState)
-          {
-            showToast(text: state.error,
-                state:Toaststate.ERROR
-            );
+      child: BlocConsumer<SocialLoginCubit, SocialloginState>(
+        listener: (context, state) {
+          if (state is SocialloginErrorState) {
+            showToast(text: state.error, state: Toaststate.ERROR);
           }
 
-          if(state is SocialloginSuccessState)
-          {
-            CachHelper.saveData(key:'uId' , value:state.uId).then((value)
-            {
-              navigateAndFinish(context, SocialHomeScreen());
+          if (state is SocialloginSuccessState) {
+            CachHelper.saveData(key: 'uId', value: state.uId).then((value) {
+              navigateAndFinish(context, const SocialHomeScreen());
             });
-
           }
         },
-        builder: (context,state)
-        {
+        builder: (context, state) {
           return Scaffold(
             appBar: AppBar(),
             body: Center(
@@ -56,66 +68,73 @@ class SocialLoginScreen extends StatelessWidget {
                         //   image:
                         //   AssetImage('assets/img/login.png'),
                         // ),
-                        SizedBox(height: 10.0,),
+                        const SizedBox(
+                          height: 10.0,
+                        ),
                         Text(
                           "LOGIN",
                           style: Theme.of(context)
                               .textTheme
-                              .headline4!
+                              .headlineMedium!
                               .copyWith(color: Colors.black),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
                           "login now to communicate with your friends",
                           style:
-                          Theme.of(context).textTheme.bodyText1?.copyWith(
-                            color: Colors.grey,
-                          ),
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.grey,
+                                  ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30,
                         ),
                         defaultformfield(
-                          controller: EmailController,
+                          controller: emailController,
                           type: TextInputType.emailAddress,
                           validate: (String? value) {
                             if (value!.isEmpty) {
                               return "please entre your email address";
                             }
+                            return null;
                           },
                           label: "Email Address",
                           icon: Icons.email_outlined,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 15.0,
                         ),
                         defaultformfield(
-                          controller: PasswordController,
+                          controller: passwordController,
                           type: TextInputType.visiblePassword,
                           isPassword: SocialLoginCubit.get(context).isPassword,
-                          suffix: SocialLoginCubit.get(context).isPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                          suffix: SocialLoginCubit.get(context).isPassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
                           suufixpress: () => {
                             SocialLoginCubit.get(context)
-                                .ChangePassowrdVisibality(),
+                                .ChangePasswordVisability(),
                           },
                           onSubmit: (value) {
                             if (formKey.currentState!.validate()) {
                               SocialLoginCubit.get(context).userloin(
-                                  email: EmailController.text,
-                                  password: PasswordController.text);
+                                  email: emailController.text,
+                                  password: passwordController.text);
                             }
+                            return null;
                           },
                           validate: (String? value) {
                             if (value!.isEmpty) {
                               return "password is too short ";
                             }
+                            return null;
                           },
                           label: "Password",
                           icon: Icons.lock_outline,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30.0,
                         ),
                         ConditionalBuilder(
@@ -124,27 +143,27 @@ class SocialLoginScreen extends StatelessWidget {
                               function: () {
                                 if (formKey.currentState!.validate()) {
                                   SocialLoginCubit.get(context).userloin(
-                                      email: EmailController.text,
-                                      password: PasswordController.text);
+                                      email: emailController.text,
+                                      password: passwordController.text);
                                 }
                               },
                               text: 'Login',
                               isUpperCase: true),
                           fallback: (context) =>
-                              Center(child: CircularProgressIndicator()),
+                              const Center(child: CircularProgressIndicator()),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 15.0,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              "Don\'t have an account?",
+                            const Text(
+                              "Don't have an account?",
                             ),
                             defaultTextButton(
                               function: () {
-                                navigteTo(context, SocialRegisterScreen());
+                                navigteTo(context, const SocialRegisterScreen());
                               },
                               text: 'register',
                             )

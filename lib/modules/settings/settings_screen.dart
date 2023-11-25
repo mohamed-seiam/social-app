@@ -4,6 +4,7 @@ import 'package:chatapp/cubit/cubit.dart';
 import 'package:chatapp/cubit/states.dart';
 import 'package:chatapp/modules/edit_profile/edit_profile.dart';
 import 'package:chatapp/shared/component/component.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,11 +13,10 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SocialCubit,SocialStates>(
-      listener: (context,state){},
-      builder: (context,state)
-      {
-        var cubit= SocialCubit.get(context).model;
+    return BlocConsumer<SocialCubit, SocialStates>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        var cubit = SocialCubit.model;
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -32,40 +32,43 @@ class SettingsScreen extends StatelessWidget {
                       child: Container(
                         width: double.infinity,
                         height: 140.0,
-                        decoration: BoxDecoration
-                          (
-                          borderRadius:BorderRadius.only(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(4.0),
                             topRight: Radius.circular(4.0),
                           ),
                           image: DecorationImage(
-                            image:  NetworkImage('${cubit!.cover}'),
+                            image: NetworkImage('${cubit?.cover}'),
                             fit: BoxFit.cover,
                           ),
                         ),
-
                       ),
                     ),
                     CircleAvatar(
                       radius: 54,
-                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
                       child: CircleAvatar(
                         radius: 50.0,
-                        backgroundImage: NetworkImage('${cubit!.image}'),
+                        backgroundImage: NetworkImage('${cubit?.image}'),
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 5.0,),
-              Text(
-                '${cubit.name}',
-                style: Theme.of(context).textTheme.subtitle1,
+              SizedBox(
+                height: 5.0,
               ),
-              SizedBox(height: 4.0,),
               Text(
-                '${cubit.bio}',
-                style: Theme.of(context).textTheme.caption,
+                '${cubit?.name}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              SizedBox(
+                height: 4.0,
+              ),
+              Text(
+                '${cubit?.bio}',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -77,15 +80,15 @@ class SettingsScreen extends StatelessWidget {
                           children: [
                             Text(
                               '100',
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
                               'Posts',
-                              style: Theme.of(context).textTheme.caption,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         ),
-                        onTap: (){},
+                        onTap: () {},
                       ),
                     ),
                     Expanded(
@@ -94,15 +97,15 @@ class SettingsScreen extends StatelessWidget {
                           children: [
                             Text(
                               '300',
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
                               'Photo',
-                              style: Theme.of(context).textTheme.caption,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         ),
-                        onTap: (){},
+                        onTap: () {},
                       ),
                     ),
                     Expanded(
@@ -111,15 +114,15 @@ class SettingsScreen extends StatelessWidget {
                           children: [
                             Text(
                               '100',
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
                               'Following',
-                              style: Theme.of(context).textTheme.caption,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         ),
-                        onTap: (){},
+                        onTap: () {},
                       ),
                     ),
                     Expanded(
@@ -128,18 +131,17 @@ class SettingsScreen extends StatelessWidget {
                           children: [
                             Text(
                               '120',
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
                               'Followers',
-                              style: Theme.of(context).textTheme.caption,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         ),
-                        onTap: (){},
+                        onTap: () {},
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -147,26 +149,37 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed:(){},
+                      onPressed: () {},
                       child: Text(
                         'Add Photo',
                       ),
                     ),
                   ),
-                  SizedBox(width: 10.0,),
+                  SizedBox(
+                    width: 10.0,
+                  ),
                   OutlinedButton(
-                      onPressed:()
-                      {
-                        navigteTo(context,
-                            EditProfileScreen(),
-                        );
-                      },
-                      child:Icon
-                        (
-                        Icons.edit,
-                      ),
+                    onPressed: () {
+                      navigteTo(
+                        context,
+                        EditProfileScreen(),
+                      );
+                    },
+                    child: Icon(
+                      Icons.edit,
+                    ),
                   ),
                 ],
+              ),
+              OutlinedButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance
+                      .signOut()
+                      .then((value) => navigateAndFinish);
+                },
+                child: Icon(
+                  Icons.logout_outlined,
+                ),
               ),
             ],
           ),

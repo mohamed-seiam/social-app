@@ -7,67 +7,62 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../constance.dart';
+
 class SocialRegisterCubit extends Cubit<SocialregisterState> {
   SocialRegisterCubit() : super(SocialregisterInitialState());
 
   static SocialRegisterCubit get(context) => BlocProvider.of(context);
 
-  void userregister({
+  Future<void> userRegister({
     required String email,
     required String password,
     required String name,
     required String phone,
-  }) {
+  }) async {
     emit(SocialregisterLoadingState());
-    FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-    ).then((value)
-    {
+    await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    )
+        .then((value) {
       print(value.user!.email);
-      print(value.user!.uid);
-      userCreate(
-          email: email,
-          uId: value.user!.uid,
-          name: name,
-          phone: phone
-      );
-    }).catchError((error)
-    {
-      print(error.toString());
-      emit(SocialregisterErrorState(error.toString()));
+      print('cubit register : ${value.user!.uid}');
+      userCreate(email: email, uId: value.user!.uid, name: name, phone: phone);
     });
   }
 
-  void userCreate({
+  Future<void> userCreate({
     required String email,
     required String uId,
     required String name,
     required String phone,
-})
-
-  {
-    SocialUserModel _userModel = SocialUserModel(
+  }) async {
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
+    SocialUserModel userModel = SocialUserModel(
       email: email,
       name: name,
       phone: phone,
       uId: uId,
       bio: 'write your bio...',
-        isEmailVerified: false,
-        image: 'https://img.freepik.com/free-photo/stylish-man-posing-building-scene_158595-2391.jpg?w=900&t=st=1672078161~exp=1672078761~hmac=11ea5f7cca47eff6270a76ac033b9d928bb7138909f2d37da234ce7b23e54f39',
-        cover: 'https://img.freepik.com/free-photo/friendly-man-sitting_23-2147646604.jpg?w=900&t=st=1672078198~exp=1672078798~hmac=9b99de5d925e6acf58d0917482a355f050a4da851361bf07692fe9738b744c97',
+      createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
+      isEmailVerified: false,
+      image: defaultProfileImage,
+      cover: defaultCoverImage,
+      isOnline: false,
+      lastActive: time,
+      pushToken: '',
     );
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(uId)
-          .set(_userModel
-          .tomap()).then((value)
-      {
-        emit(SocialCreateUserSuccessState());
-      }).catchError((error)
-      {
-        emit(SocialregisterErrorState(error.toString()));
-      });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId)
+        .set(userModel.toMap())
+        .then((value) {
+      emit(
+        SocialCreateUserSuccessState(uId),
+      );
+    });
   }
 
   // IconData suffix = Icons.visibility_outlined;

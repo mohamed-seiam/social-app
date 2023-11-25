@@ -13,7 +13,11 @@ class SocialregisterErrorState extends SocialregisterState {
   SocialregisterErrorState(this.error);
 }
 
-class SocialCreateUserSuccessState extends SocialregisterState {}
+class SocialCreateUserSuccessState extends SocialregisterState {
+  final String uid;
+
+  SocialCreateUserSuccessState(this.uid);
+}
 
 class SocialCreateUserErrorState extends SocialregisterState {
   final String error;
