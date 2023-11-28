@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
   final Widget startWidget;
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(

@@ -4,7 +4,7 @@ import 'package:chatapp/modules/chats/chat_screen.dart';
 import 'package:chatapp/modules/feeds/feeds_cubit/feeds_cubit.dart';
 import 'package:chatapp/modules/feeds/feeds_screen.dart';
 import 'package:chatapp/modules/posts/posts.dart';
-import 'package:chatapp/modules/settings/settings_screen.dart';
+import 'package:chatapp/modules/settings/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -31,7 +31,7 @@ class SocialCubit extends Cubit<SocialStates> {
         .collection('users')
         .doc(userId)
         .get()
-        .then((value) async {
+        .then((value)  {
       model = SocialUserModel.fromJson(value.data()!);
       emit(SocialGetUserSuccessState());
     }).then((value) {
@@ -42,6 +42,7 @@ class SocialCubit extends Cubit<SocialStates> {
     //   emit(SocialGetUserErrorState(error.toString()));
     // });
   }
+
 
   List<Widget> screens = [
     BlocProvider(

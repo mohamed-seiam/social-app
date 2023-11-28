@@ -1,10 +1,8 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:chatapp/cubit/cubit.dart';
 import 'package:chatapp/cubit/states.dart';
 import 'package:chatapp/modules/edit_profile/edit_profile.dart';
 import 'package:chatapp/shared/component/component.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +15,7 @@ class SettingsScreen extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         var cubit = SocialCubit.model;
-
+        var currentUser = SocialCubit.get(context).user.currentUser!.uid;
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -33,7 +31,7 @@ class SettingsScreen extends StatelessWidget {
                         width: double.infinity,
                         height: 140.0,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(4.0),
                             topRight: Radius.circular(4.0),
                           ),
@@ -47,7 +45,7 @@ class SettingsScreen extends StatelessWidget {
                     CircleAvatar(
                       radius: 54,
                       backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
+                      Theme.of(context).scaffoldBackgroundColor,
                       child: CircleAvatar(
                         radius: 50.0,
                         backgroundImage: NetworkImage('${cubit?.image}'),
@@ -56,14 +54,14 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5.0,
               ),
               Text(
                 '${cubit?.name}',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 4.0,
               ),
               Text(
@@ -113,7 +111,7 @@ class SettingsScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              '100',
+                              cubit!.totalFollowing.toString(),
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
@@ -130,7 +128,7 @@ class SettingsScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              '120',
+                              cubit.totalFollowers.toString(),
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
@@ -145,41 +143,32 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              if(cubit.uId != currentUser)
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {},
-                      child: Text(
+                      child: const Text(
                         'Add Photo',
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10.0,
                   ),
                   OutlinedButton(
                     onPressed: () {
                       navigteTo(
                         context,
-                        EditProfileScreen(),
+                        const EditProfileScreen(),
                       );
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.edit,
                     ),
                   ),
                 ],
-              ),
-              OutlinedButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance
-                      .signOut()
-                      .then((value) => navigateAndFinish);
-                },
-                child: Icon(
-                  Icons.logout_outlined,
-                ),
               ),
             ],
           ),

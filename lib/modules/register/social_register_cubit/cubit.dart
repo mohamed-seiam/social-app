@@ -52,6 +52,10 @@ class SocialRegisterCubit extends Cubit<SocialregisterState> {
       cover: defaultCoverImage,
       isOnline: false,
       lastActive: time,
+      totalFollowing:0,
+      totalFollowers:0,
+      following: [],
+      followers: [],
       pushToken: '',
     );
     await FirebaseFirestore.instance

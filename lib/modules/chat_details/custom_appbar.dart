@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chatapp/modules/chat_details/view_profile_screen.dart';
+import 'package:chatapp/modules/settings/users_cubit/users_profile_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/user_model.dart';
 import '../../network/remote/apis.dart';
 import '../../network/remote/helper.dart';
 import '../../shared/component/component.dart';
+import '../settings/users_profile_screen.dart';
 
 class CustomAppBar extends StatefulWidget {
   const CustomAppBar({Key? key, required this.userModel}) : super(key: key);
@@ -21,9 +23,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
       onTap: () {
         navigteTo(
             context,
-            ViewProfileScreen(
-              userModel: widget.userModel,
-            ));
+           BlocProvider(
+             create: (context)=> UsersProfileCubit()..getOtherUserData(otherUserId: widget.userModel.uId),
+               child:PreviewUserProfile(
+                 userModel: widget.userModel,
+               )));
       },
       child: StreamBuilder(
           stream: Api.getUserInfo(userModel: widget.userModel),

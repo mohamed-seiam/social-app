@@ -31,6 +31,7 @@ class FeedsCubit extends Cubit<FeedsState> {
       emit(FeedsPickedImageFailure());
     }
   }
+
   Future<void> getPostVideo() async {
     final pickedVideo = await picker.pickVideo(source: ImageSource.gallery);
 
@@ -59,7 +60,10 @@ class FeedsCubit extends Cubit<FeedsState> {
     emit(FeedsLoading());
     firebase_storage.FirebaseStorage.instance
         .ref()
-        .child('posts/${Uri.file(postImage!.path).pathSegments.last}')
+        .child('posts/${Uri
+        .file(postImage!.path)
+        .pathSegments
+        .last}')
         .putFile(postImage!)
         .then((value) {
       value.ref.getDownloadURL().then((value) {
@@ -76,6 +80,7 @@ class FeedsCubit extends Cubit<FeedsState> {
       emit(FeedsFailure());
     });
   }
+
   void upLoadPostVideo({
     required String text,
     required Timestamp dateTime,
@@ -83,7 +88,10 @@ class FeedsCubit extends Cubit<FeedsState> {
     emit(FeedsLoading());
     firebase_storage.FirebaseStorage.instance
         .ref()
-        .child('posts/${Uri.file(postVideo!.path).pathSegments.last}')
+        .child('posts/${Uri
+        .file(postVideo!.path)
+        .pathSegments
+        .last}')
         .putFile(postVideo!)
         .then((value) {
       value.ref.getDownloadURL().then((value) {
@@ -118,7 +126,7 @@ class FeedsCubit extends Cubit<FeedsState> {
       dateTime: dateTime,
       type: type,
       postImage: postImage ?? '',
-      postVideo: postVideo??'',
+      postVideo: postVideo ?? '',
       totalComments: 0,
       postId: const Uuid().v1(),
       likes: [],

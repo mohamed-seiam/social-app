@@ -6,11 +6,16 @@ class SocialUserModel {
   late final bool isEmailVerified;
   late final String image;
   late final String cover;
+  late final int? totalFollowers;
+  late final int? totalFollowing;
   late final String bio;
-  late final String ? lastActive;
+  late final List<String>? followers;
+  late final List<String>? following;
+  late final String? lastActive;
   late final bool? isOnline;
-  late String ? pushToken;
+  late String? pushToken;
   late final String createdAt;
+
   SocialUserModel({
     required this.email,
     required this.phone,
@@ -21,9 +26,13 @@ class SocialUserModel {
     required this.image,
     required this.bio,
     required this.createdAt,
-     this.isOnline,
-     this.lastActive,
-     this.pushToken,
+    this.isOnline,
+    this.lastActive,
+    this.pushToken,
+    this.followers,
+    this.totalFollowing,
+    this.following,
+    this.totalFollowers,
   });
 
   SocialUserModel.fromJson(Map<String, dynamic> json) {
@@ -35,10 +44,14 @@ class SocialUserModel {
     cover = json['cover'];
     image = json['image'];
     bio = json['bio'];
-    isOnline = json['is_online']??false;
-    lastActive = json['last_active']??'';
+    isOnline = json['is_online'] ?? false;
+    lastActive = json['last_active'] ?? '';
     pushToken = json['push_token'];
     createdAt = json['created_At'];
+    following = List.from(json['following']);
+    followers = List.from(json['followers']);
+    totalFollowers = json['totalFollowers'];
+    totalFollowing = json['totalFollowing'];
   }
 
   Map<String, dynamic> toMap() {
@@ -54,7 +67,11 @@ class SocialUserModel {
       'is_online': isOnline,
       'last_active': lastActive,
       'push_token': pushToken,
-      'created_At':createdAt,
+      'created_At': createdAt,
+      'totalFollowing': totalFollowing,
+      'totalFollowers': totalFollowers,
+      'following': following,
+      'followers': followers,
     };
   }
 }
