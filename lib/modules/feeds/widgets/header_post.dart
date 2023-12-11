@@ -56,7 +56,7 @@ final SocialPostModel postModel;
         const SizedBox(
           width: 15.0,
         ),
-        if(postModel.uId==SocialCubit.get(context).user.currentUser!.uid)
+        if(postModel.uId==SocialCubit.get(context).user.currentUser?.uid)
           IconButton(
             onPressed: () {
               showMenu(

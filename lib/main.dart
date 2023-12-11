@@ -7,11 +7,11 @@ import 'package:chatapp/modules/login/social_login_screen.dart';
 import 'package:chatapp/network/local/cach_helper.dart';
 import 'package:chatapp/notification_handelr.dart';
 import 'package:chatapp/shared/component/constance.dart';
-import 'package:chatapp/styles/colors.dart';
+import 'package:chatapp/theme_class.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,8 +29,10 @@ void main() async {
   } else {
     widget = const SocialLoginScreen();
   }
-  runApp(MyApp(
-    startWidget: widget,
+  runApp(Phoenix(
+    child: MyApp(
+      startWidget: widget,
+    ),
   ));
 }
 
@@ -48,42 +50,13 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(
             create: (context) => SocialCubit()
-              ..getUserData()
+              ..getUserData(fromWhere: true)
               ..getAllUsers(),),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: defaultColor,
-          scaffoldBackgroundColor: Colors.white,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.white,
-            elevation: 0.0,
-            titleTextStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 26.0,
-              fontWeight: FontWeight.bold,
-            ),
-            iconTheme: IconThemeData(color: Colors.black),
-            systemOverlayStyle: SystemUiOverlayStyle(
-              statusBarColor: Colors.white,
-              statusBarIconBrightness: Brightness.dark,
-            ),
-          ),
-          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: defaultColor,
-            elevation: 20.0,
-          ),
-          textTheme: const TextTheme(
-            bodyLarge: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
-        ),
+        theme: AppTheme.appTheme,
         home: startWidget,
       ),
     );

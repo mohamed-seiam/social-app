@@ -1,4 +1,4 @@
-
+import 'package:chatapp/cubit/cubit.dart';
 import 'package:chatapp/models/user_model.dart';
 import 'package:chatapp/modules/settings/users_cubit/users_profile_cubit.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
@@ -6,8 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PreviewUserProfile extends StatelessWidget {
-  const PreviewUserProfile({Key? key, required this.userModel,}) : super(key: key);
+  const PreviewUserProfile({
+    Key? key,
+    required this.userModel,
+  }) : super(key: key);
   final SocialUserModel userModel;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,11 +19,12 @@ class PreviewUserProfile extends StatelessWidget {
       body: BlocConsumer<UsersProfileCubit, UsersProfileState>(
         listener: (context, state) {},
         builder: (context, state) {
-          var currentUser = UsersProfileCubit.get(context).user.currentUser!.uid;
+          var currentUser =
+              UsersProfileCubit.get(context).user.currentUser!.uid;
           var profileCubit = UsersProfileCubit.get(context).specificUser;
           return ConditionalBuilder(
-            condition: profileCubit!= null,
-            builder:(context)=> Padding(
+            condition: profileCubit != null,
+            builder: (context) => Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
@@ -48,7 +53,7 @@ class PreviewUserProfile extends StatelessWidget {
                         CircleAvatar(
                           radius: 54,
                           backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
+                              Theme.of(context).scaffoldBackgroundColor,
                           child: CircleAvatar(
                             radius: 50.0,
                             backgroundImage: NetworkImage(profileCubit.image),
@@ -81,7 +86,8 @@ class PreviewUserProfile extends StatelessWidget {
                               children: [
                                 Text(
                                   '100',
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                                 Text(
                                   'Posts',
@@ -98,7 +104,8 @@ class PreviewUserProfile extends StatelessWidget {
                               children: [
                                 Text(
                                   '300',
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                                 Text(
                                   'Photo',
@@ -115,7 +122,8 @@ class PreviewUserProfile extends StatelessWidget {
                               children: [
                                 Text(
                                   profileCubit.totalFollowing.toString(),
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                                 Text(
                                   'Following',
@@ -132,7 +140,8 @@ class PreviewUserProfile extends StatelessWidget {
                               children: [
                                 Text(
                                   profileCubit.totalFollowers.toString(),
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                                 Text(
                                   'Followers',
@@ -146,18 +155,22 @@ class PreviewUserProfile extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if(profileCubit.uId != currentUser)
+                  if (profileCubit.uId != currentUser)
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () async {
-                           await UsersProfileCubit.get(context).followUser(userId: userModel.uId).then((value) {
-                             UsersProfileCubit.get(context).getOtherUserData(otherUserId: userModel.uId);
-                           });
+                              await UsersProfileCubit.get(context)
+                                  .followUser(userId: userModel.uId).then((value) {
+                                    UsersProfileCubit.get(context).getOtherUserData(otherUserId: userModel.uId);
+                              });
+                              SocialCubit.get(context).getUserData(fromWhere: false);
                             },
-                            child:Text(
-                              profileCubit.followers!.contains(currentUser)?'UnFollow':'Follow',
+                            child: Text(
+                              profileCubit.followers!.contains(currentUser)
+                                  ? 'UnFollow'
+                                  : 'Follow',
                             ),
                           ),
                         ),
@@ -166,7 +179,9 @@ class PreviewUserProfile extends StatelessWidget {
                 ],
               ),
             ),
-            fallback:(context)=> const Center(child: CircularProgressIndicator(),),
+            fallback: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         },
       ),

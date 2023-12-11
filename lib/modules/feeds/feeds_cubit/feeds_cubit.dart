@@ -32,7 +32,7 @@ class FeedsCubit extends Cubit<FeedsState> {
     }
   }
 
-  Future<void> getPostVideo() async {
+  Future<void> pickPostVideo() async {
     final pickedVideo = await picker.pickVideo(source: ImageSource.gallery);
 
     if (pickedVideo != null) {

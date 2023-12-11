@@ -19,9 +19,6 @@ class _PostVideoWidgetState extends State<PostVideoWidget> {
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.postModel.postVideo!));
     _chewieController = ChewieController(
         videoPlayerController: _controller, allowFullScreen: true);
-    final playerWidget = Chewie(
-      controller: _chewieController,
-    );
     super.initState();
   }
 

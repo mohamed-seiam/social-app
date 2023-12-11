@@ -8,6 +8,7 @@ import 'package:chatapp/shared/component/component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 class SocialLoginScreen extends StatefulWidget {
   const SocialLoginScreen({Key? key}) : super(key: key);
@@ -49,6 +50,7 @@ class _SocialLoginScreenState extends State<SocialLoginScreen> {
           if (state is SocialloginSuccessState) {
             CachHelper.saveData(key: 'uId', value: state.uId).then((value) {
               navigateAndFinish(context, const SocialHomeScreen());
+              Phoenix.rebirth(context);
             });
           }
         },
@@ -138,7 +140,7 @@ class _SocialLoginScreenState extends State<SocialLoginScreen> {
                           height: 30.0,
                         ),
                         ConditionalBuilder(
-                          condition: state is! SocialloginLoadingState,
+                          condition: state is !SocialloginLoadingState,
                           builder: (context) => defaultButton(
                               function: () {
                                 if (formKey.currentState!.validate()) {

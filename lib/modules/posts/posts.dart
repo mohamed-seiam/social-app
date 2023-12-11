@@ -160,7 +160,7 @@ class PostScreen extends StatelessWidget {
                     Expanded(
                       child: TextButton(
                         onPressed: () {
-                          FeedsCubit.get(context).getPostVideo();
+                          FeedsCubit.get(context).pickPostVideo();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

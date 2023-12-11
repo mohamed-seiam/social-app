@@ -24,18 +24,22 @@ class SocialCubit extends Cubit<SocialStates> {
  static SocialUserModel? model;
   final user = FirebaseAuth.instance;
 
-  void getUserData() async {
+  void getUserData({required bool fromWhere}) async {
     emit(SocialGetUserLoadingState());
-    final userId = user.currentUser!.uid;
+    final userId = user.currentUser?.uid;
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .get()
         .then((value)  {
-      model = SocialUserModel.fromJson(value.data()!);
+      model = SocialUserModel.fromJson(value.data()??{});
       emit(SocialGetUserSuccessState());
     }).then((value) {
-      Api.getSelfInfo();
+      if(fromWhere){
+        Api.getSelfInfo();
+      }else {
+        return;
+      }
     });
     // }).catchError((error) {
     //   log(error.toString());
@@ -199,7 +203,7 @@ class SocialCubit extends Cubit<SocialStates> {
         .doc(model?.uId)
         .update(userModel.toMap())
         .then((value) {
-      getUserData();
+      getUserData(fromWhere: true);
     }).catchError((error) {
       emit(SocialUpdateDataError());
     });
@@ -226,7 +230,7 @@ class SocialCubit extends Cubit<SocialStates> {
     if (allUsers.isEmpty) {
       await FirebaseFirestore.instance.collection('users').get().then((value) {
         for (var element in value.docs) {
-          if (element.data()['uId'] != user.currentUser!.uid) {
+          if (element.data()['uId'] != user.currentUser?.uid) {
             allUsers.add(SocialUserModel.fromJson(element.data()));
           }
         }

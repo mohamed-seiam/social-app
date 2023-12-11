@@ -55,7 +55,7 @@ final SocialPostModel postModel;
             children: [
               Icon(
                 postModel.likes!.contains(
-                    FirebaseAuth.instance.currentUser!.uid)
+                    FirebaseAuth.instance.currentUser?.uid)
                     ? Icons.favorite
                     : Icons.favorite_border_outlined,
                 size: 20.0,
@@ -66,7 +66,7 @@ final SocialPostModel postModel;
               ),
               Text(
                 postModel.likes!.contains(
-                    FirebaseAuth.instance.currentUser!.uid)
+                    FirebaseAuth.instance.currentUser?.uid)
                     ? 'DisLike'
                     : 'Like',
                 style: Theme.of(context).textTheme.bodySmall,

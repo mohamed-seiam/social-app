@@ -36,22 +36,22 @@ class SocialUserModel {
   });
 
   SocialUserModel.fromJson(Map<String, dynamic> json) {
-    email = json['email'];
-    phone = json['phone'];
-    name = json['name'];
-    uId = json['uId'];
-    isEmailVerified = json['isEmailVerified'];
-    cover = json['cover'];
-    image = json['image'];
-    bio = json['bio'];
+    email = json['email']??'';
+    phone = json['phone']??'';
+    name = json['name']??'';
+    uId = json['uId']??'';
+    isEmailVerified = json['isEmailVerified']??false;
+    cover = json['cover']??'';
+    image = json['image']??'';
+    bio = json['bio']??'';
     isOnline = json['is_online'] ?? false;
     lastActive = json['last_active'] ?? '';
-    pushToken = json['push_token'];
-    createdAt = json['created_At'];
-    following = List.from(json['following']);
-    followers = List.from(json['followers']);
-    totalFollowers = json['totalFollowers'];
-    totalFollowing = json['totalFollowing'];
+    pushToken = json['push_token']??'';
+    createdAt = json['created_At']??'';
+    following = List.from(json['following']??[]);
+    followers = List.from(json['followers']??[]);
+    totalFollowers = json['totalFollowers']??0;
+    totalFollowing = json['totalFollowing']??0;
   }
 
   Map<String, dynamic> toMap() {

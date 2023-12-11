@@ -39,7 +39,7 @@ dependencies:
   webview_flutter: ^3.0.4
   firebase_core: ^2.4.0
   firebase_auth: ^4.2.1
-  cloud_firestore: ^4.12.1
+  cloud_firestore: ^4.13.3
   fluttertoast: ^8.1.1
   conditional_builder_null_safety: ^0.0.6
   image_picker: ^0.8.6
@@ -63,6 +63,7 @@ dependencies:
   shimmer: ^3.0.0
   video_player: ^2.8.1
   chewie: ^1.7.1
+  flutter_phoenix: ^1.1.1
 
 
 dev_dependencies:

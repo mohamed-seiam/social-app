@@ -20,8 +20,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<FeedsCubit, FeedsState>(
-      listener: (context, state) {},
+    return BlocBuilder<FeedsCubit, FeedsState>(
       builder: (context, state) {
         var cubit = FeedsCubit.get(context);
         return ConditionalBuilder(

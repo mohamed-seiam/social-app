@@ -9,6 +9,7 @@ import 'package:chatapp/shared/component/component.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 import '../modules/posts/posts.dart';
 
@@ -37,8 +38,9 @@ class SocialHomeScreen extends StatelessWidget {
                   CachHelper.deleteData(key: 'uId');
                   await FirebaseAuth.instance.signOut();
                   navigateAndFinish(context, SocialLoginScreen());
+                  Phoenix.rebirth(context);
                 },
-                icon: Icon(Icons.notifications_on_outlined),
+                icon: Icon(Icons.logout_outlined),
               ),
               IconButton(
                 onPressed: () {},

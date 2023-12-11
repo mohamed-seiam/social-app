@@ -28,7 +28,7 @@ Widget defaultformfield({
         labelText: label,
         // labelStyle: TextStyle(color: Colors.white),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
         prefixIcon: Icon(
           icon,
         ),
